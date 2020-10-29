@@ -2,55 +2,20 @@ import React, { useState } from "react";
 // import { getProducts } from "./services/productService";
 import Spinner from "./Spinner";
 import useFetch from "./services/useFetch";
+import { useParams } from "react-router-dom";
+import PageNotFound from "./PageNotFound";
+import { Link } from "react-router-dom";
 
-// const products = [
-//   {
-//     id: 1,
-//     category: "shoes",
-//     image: "shoe1.jpg",
-//     name: "Hiker",
-//     price: 94.95,
-//     skus: [
-//       { sku: "17", size: 7 },
-//       { sku: "18", size: 8 },
-//     ],
-//     description: "This rugged boot will get you up the mountain safely.",
-//   },
-//   {
-//     id: 2,
-//     category: "shoes",
-//     image: "shoe2.jpg",
-//     name: "Climber",
-//     price: 78.99,
-//     skus: [
-//       { sku: "28", size: 8 },
-//       { sku: "29", size: 9 },
-//     ],
-//     description: "Sure-footed traction in slippery conditions.",
-//   },
-//   {
-//     id: 3,
-//     category: "shoes",
-//     image: "shoe3.jpg",
-//     name: "Explorer",
-//     price: 145.95,
-//     skus: [
-//       { sku: "37", size: 7 },
-//       { sku: "38", size: 8 },
-//       { sku: "39", size: 9 },
-//     ],
-//     description: "Look stylish while stomping in the mud.",
-//   },
-// ];
 export default function Products() {
   const [size, setSize] = useState("");
+  const { category } = useParams();
 
   // useEffect(() => {
   //   getProducts("shoes")
   //     .then((response) => setProducts(response))
   //     .catch((e) => setError(e))
   //     .finally(() => setLoading(false));
-  // }, []); // making api call with javascript promises
+  // }, []); // making api call via javascript promises
 
   // useEffect(() => {
   //   async function init() {
@@ -67,17 +32,17 @@ export default function Products() {
   // }, []); //making api call using async await
 
   const { data: products, loading, error } = useFetch(
-    "products?category=shoes"
+    "products?category=" + category
   );
 
   function renderProduct(p) {
     return (
       <div key={p.id} className="product">
-        <a href="/">
+        <Link to={`/${p.category}/${p.id}`}>
           <img src={`/images/${p.image}`} alt={p.name} />
           <h3>{p.name}</h3>
           <p>${p.price}</p>
-        </a>
+        </Link>
       </div>
     );
   }
@@ -88,6 +53,7 @@ export default function Products() {
 
   if (error) throw error;
   if (loading) return <Spinner />;
+  if (products.length === 0) return <PageNotFound />;
 
   return (
     <>
